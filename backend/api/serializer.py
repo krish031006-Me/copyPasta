@@ -11,5 +11,5 @@ class UserSerializer(serializers.ModelSerializer):
     
     # This is the method that has the user stored in the database
     def create(self, validated_data):
-        user = User.object.create_user(**validated_data) # we are using a **kwarg in the parameter
+        user = User.objects.create_user(**validated_data) # we are using a **kwarg in the parameter
         return user
