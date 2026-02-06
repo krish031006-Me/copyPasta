@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # These below are our models
-class Snippet(models.model): # This is the model to store the code snippets date captions and other information
+class Snippet(models.Model): # This is the model to store the code snippets date captions and other information
     # this is for the user that is creating this code snippet
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="snippet") 
     # the title for the code snippet

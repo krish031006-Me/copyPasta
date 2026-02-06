@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Snippet
 
 # This is the model serializer for JWT authentication
 class UserSerializer(serializers.ModelSerializer):
@@ -13,3 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data) # we are using a **kwarg in the parameter
         return user
+
+# This is the serializer for our snippet model 
+class SnippetModelSerializer(serializers.ModelSerializer):
+    class meta:
+        model=Snippet
+        fields=["__all__"]
+        # we do not need a create method as it comes by default in serializers.ModelSerializers
