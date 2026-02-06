@@ -4,7 +4,7 @@ from rest_framework import generics
 from .serializer import UserSerializer, SnippetModelSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
-from models import Snippet
+from .models import Snippet
 
 # generics is kind of like an advance version of APIView we do not have to create 
 # methods for get, post, delete etc.
