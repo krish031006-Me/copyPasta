@@ -5,6 +5,7 @@ from .serializer import RegisterSerializer, SnippetModelSerializer, LoginSeriali
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import Snippet
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # generics is kind of like an advance version of APIView we do not have to create 
 # methods for get, post, delete etc.
@@ -29,13 +30,13 @@ class CreateLoginView(generics.GenericAPIView):
         # get the user
         user = serializer.validated_data['user']
         # get the refresh token
-        refresh = RefreshToken.for_user(user)
+        refresh = RefreshToken.for_user(user) # this is the manual way to generate JWT 
         # return the response
         return Response({
-            "username": user['username'],
+            "username": user.username,
             "access": str(refresh.access_token),
-            "refresh": str(refresh)
-        }, status=status.HTTP_200_OK)
+            "refresh": str(refresh),
+        }, status=status.HTTP_200_OK) 
 
 # This is the view for snippet management
 class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST requests
