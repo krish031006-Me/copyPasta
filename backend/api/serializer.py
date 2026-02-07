@@ -1,9 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Snippet
+from django.contrib.auth import authenticate, Authe
+from rest_framework import AuthenticationFailed
 
 # This is the model serializer for JWT authentication
-class UserSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta: # the blueprint for the whole class
         model= User # THe built-in user model
         fields= ["id", "username", "password"]
@@ -14,6 +16,29 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data) # we are using a **kwarg in the parameter
         return user
+
+# This is serializer for login page we did not use ModelSerializer class cause we are not working directly with a model
+class LoginSerializer(serializers.Serializer):
+
+    # the manual fields we are taking input of
+    username = serializers.CharField(max_length=20)
+    password = serializers.CharField(write_only=True)
+
+    # This is the function for data validation
+    def validate(self, validated_data):        
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        # now authenticating the data
+        user = authenticate(username=username, password=password) 
+        # checking if the user was authenticated or not
+        if not user:
+            raise AuthenticationFailed("Invalid credentials.")
+        if not user.is_active: # is_active is present as default in User model which makes sure if the account is active or not
+            raise AuthenticationFailed("This account in inactive.")
+        return {
+            "user": user,
+            "username": user.username
+        }
 
 # This is the serializer for our snippet model 
 class SnippetModelSerializer(serializers.ModelSerializer):
