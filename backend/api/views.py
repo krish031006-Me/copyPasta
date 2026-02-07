@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import generics
-from .serializer import UserSerializer, SnippetModelSerializer
+from rest_framework import generics, status
+from .serializer import RegisterSerializer, SnippetModelSerializer, LoginSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import Snippet
@@ -12,8 +12,30 @@ from .models import Snippet
 # queryset is used to pass the data and serializer_class is how shall we convert it to JSON
 class CreateRegisterView(generics.CreateAPIView): # This is the POST APIView
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
     permission_classes = [AllowAny] # this specifies anyone can call this view
+
+# This is view for login page We didn't use CreateAPIView we used GenericAPIView as the other one calls serailizer.save() by itself
+# which we do not want. All we want is to authenticate the user
+class CreateLoginView(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+    permission_classes=[AllowAny]
+
+    def post(self, request):
+        # initialising the serializer with data
+        serializer = self.get_serializer(data=request.data)
+        # checking for validation
+        serializer.is_valid(raise_exception=True) # raise_exception is for handling any errors safely
+        # get the user
+        user = serializer.validated_data['user']
+        # get the refresh token
+        refresh = RefreshToken.for_user(user)
+        # return the response
+        return Response({
+            "username": user['username'],
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        }, status=status.HTTP_200_OK)
 
 # This is the view for snippet management
 class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST requests
