@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Snippet
-from django.contrib.auth import authenticate, Authe
-from rest_framework import AuthenticationFailed
+from django.contrib.auth import authenticate
+from rest_framework.exceptions import AuthenticationFailed
 
 # This is the model serializer for JWT authentication
 class RegisterSerializer(serializers.ModelSerializer):
