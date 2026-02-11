@@ -15,7 +15,7 @@ api.interceptors.request.use(
     (config) => { // Here config is kind of like an envelope that is used to store information on web
         const token = localStorage.getItem(ACCESS_TOKEN);
         if (token){
-            config.headers.Authorization = `Bearer ${token}` // adding the authorisation token to header
+            config.headers.Authorization = `Bearer ${token}` // adding the authorisation token to header in config
         }
         return config
     },
