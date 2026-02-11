@@ -55,7 +55,8 @@ function ProtectedRoute({ children }) { // children is used to catch all the ele
         }
 
         // Execute the logic
-        // FIXED: changed isAuthorized(false) to setIsAuthorized(false)
+        // We are able to use .catch() as accesstoken() will return a promise and on a promise we can apply two things
+        // the .then() to it's data when everything is completed and .catch() to catch the errors.
         accesstoken().catch(() => setIsAuthorized(false))
 
     }, []);
