@@ -1,33 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import react from "react"
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom" 
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import NotFound from "./pages/NotFound"
+import Home from "./pages/Home"
+import ProtectedRoute from "./components/ProtectedRoute" 
 
-function App() {
-  const [count, setCount] = useState(0)
+// This is the logout function
+function Logout(){
+  localStorage.clear()
+  return <Navigate to="/login"></Navigate>
+}
 
+// This is the fucntion to logout and then register cause we wanna remove the old tokens present
+function RegisterAndLogout(){
+  localStorage.clear()
+  return <Register></Register>
+}
+
+function App(){
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/"
+            element={ // This is to be rendered when this route is present
+              <ProtectedRoute>
+                <Home></Home>
+              </ProtectedRoute>
+            }>
+          </Route>
+          <Route 
+            path="/login"
+            element={
+              <Login />
+            }
+          ></Route>
+          <Route 
+            path="/register"
+            element={
+              <RegisterAndLogout></RegisterAndLogout>
+            }>
+          </Route>
+          <Route 
+            path="*" // render not found for any other element
+            element={
+              <NotFound></NotFound>
+            }>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
