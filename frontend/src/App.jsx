@@ -49,6 +49,7 @@ function App(){
               <NotFound></NotFound>
             }>
           </Route>
+          <Route path="/logout" element={<Logout></Logout>}></Route>
         </Routes>
       </BrowserRouter>
     </>
