@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react"
 import api from "../api"
 import Note from "../components/Notes"
+import "../styles/Home.css"
 
 function Home(){
     const [snippets, setSnippets] = useState([]);
@@ -18,7 +19,7 @@ function Home(){
     
     // THis is the function to delete node
     const deleteSnippet = async(id) => {
-        await api.delete(`api/snippets/delete/${id}`)
+        await api.delete(`api/snippets/delete/${id}/`)
         .then((res) => {
             if (res.status === 204){
                 alert("Item deleted.")
@@ -33,6 +34,7 @@ function Home(){
 
     // This is the function to create a code snippet
     const createSnippet = async(e) => {
+        console.log("creating a node")
         e.preventDefault() // to avoid submitting the form
         await api.post("api/snippets/", {
             title:title,
