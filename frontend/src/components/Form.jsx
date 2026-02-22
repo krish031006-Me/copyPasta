@@ -3,6 +3,7 @@ import api from "../api"
 import { useNavigate } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/Form.css"
+import LoadingIndicator from "./LoadingIndicator"
 
 function Form({path, method}){ // These are the props passed to you
     const [username, setUsername] = useState("")
@@ -50,6 +51,7 @@ function Form({path, method}){ // These are the props passed to you
             placeholder="Password"
             autoComplete="off">
         </input>
+        {loading && <LoadingIndicator />}
         <button className="form-button" type="submit">
             {name}
         </button>
