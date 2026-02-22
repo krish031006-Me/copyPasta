@@ -10,7 +10,6 @@ function Home(){
     
     // This is the function to get the snippet
     const getSnippet = async() => {
-        console.log("i'm trying to create one")
         await api.get("api/snippets/")  
         .then((res) => res = res.data)
         .then((data) => {setSnippets(data); console.log(data)})
@@ -34,7 +33,6 @@ function Home(){
 
     // This is the function to create a code snippet
     const createSnippet = async(e) => {
-        console.log("i'm trying to create one")
         e.preventDefault() // to avoid submitting the form
         await api.post("api/snippets/", {
             title:title,
@@ -56,7 +54,8 @@ function Home(){
     return <div>
         <div>
             <h2>Your codes:</h2>
-            {notes.map((note) => (
+            {console.log("Going to notes component")}
+            {snippets.map((note) => (
                 <Note note={note} onDelete={deleteSnippet} key={note.id}/>)
             )} 
         </div>
