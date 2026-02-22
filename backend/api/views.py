@@ -5,7 +5,7 @@ from .serializer import RegisterSerializer, SnippetModelSerializer, LoginSeriali
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import Snippet
-from rest_framework_simplejwt.tokens import RefreshToken 
+from rest_framework_simplejwt.tokens import RefreshToken  
 
 # generics is kind of like an advance version of APIView we do not have to create 
 # methods for get, post, delete etc.
@@ -20,7 +20,7 @@ class CreateRegisterView(generics.CreateAPIView): # This is the POST APIView
 # which we do not want. All we want is to authenticate the user
 class CreateLoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    permission_classes=[AllowAny]
+    permission_classes=[AllowAny] 
 
     def post(self, request):
         # initialising the serializer with data
@@ -40,12 +40,12 @@ class CreateLoginView(generics.GenericAPIView):
 
 # This is the view for snippet management
 class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST requests
-    queryset = Snippet.objects.all()
+    queryset = Snippet.objects.all() # we do this cause some process in back might look for this even before get_queryset() is called
     serializer_class = SnippetModelSerializer
     permission_classes = [IsAuthenticated]
 
     # we created get_queryset rather than only using queryset cause we needed access to the user
-    def get_queryset(self):
+    def get_queryset(self): 
         user = self.request.user # This is how you fetch or get the user
         return Snippet.objects.filter(author=user) # getting all the snippets by our user
     
@@ -57,7 +57,7 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             print(serializer.errors) 
             return Response(serializer.errors)
 
-# This is a view to delete a snippet
+# This is a view to delete a snippet it does the deletion by itself
 class DeleteSnippetView(generics.DestroyAPIView):
     serializer_class=SnippetModelSerializer
     permission_classes=[IsAuthenticated]
