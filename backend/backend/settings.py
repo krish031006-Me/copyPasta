@@ -14,19 +14,11 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
-import sys
-
-# setting up sys
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)
-print("I am looking for files in:", sys.path[-1])
 import dj_database_url
-
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -104,7 +96,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # ... (rest of your imports)
-
+print("DATABASE URL IS:", os.environ.get("DATABASE_URL"))
 # 1. Default to SQLite (Local Development)
 DATABASES = {
     'default': {
@@ -173,4 +165,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
