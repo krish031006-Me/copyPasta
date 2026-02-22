@@ -1,13 +1,12 @@
 import {useState, useEffect} from "react"
 import api from "../api"
+import Note from "../components/Notes"
 
 function Home(){
     const [snippets, setSnippets] = useState([]);
     const [notes, setNotes] = useState([]);
     const [code, setCode] = useState("");
     const [title, setTitle] = useState("");
-    const [language, setLanguage] = useState("");
-
     
     // This is the function to get the snippet
     const getSnippet = async() => {
@@ -24,29 +23,29 @@ function Home(){
         .then((res) => {
             if (res.status === 204){
                 alert("Item deleted.")
+                // calling the getSnippet function to print the code after deletion
+                // we could simply delete stuff from state but we are not using it
+                getSnippet(); 
             }else{
                 alert("Failed.")
             }
         }).catch((err) => alert(err))
-        // calling the getSnippet function to print the code after deletion
-        // we could simply delete stuff from state but we are not using it
-        getSnippet();
     }
 
     // This is the function to create a code snippet
     const createSnippet = async(e) => {
         console.log("i'm trying to create one")
-        e.preventDefault()
+        e.preventDefault() // to avoid submitting the form
         await api.post("api/snippets/", {
             title:title,
             code:code
         }) 
         .then((res) => {
             if(res.status === 200){ // means the code snippet is created
-                alert("Snippet Created")
+                alert("Snippet Created") 
+                getSnippet();
             }
         }).catch((err) => alert(err))
-        getSnippet();
     }
 
     // Using useEffect to call the functions
@@ -57,6 +56,9 @@ function Home(){
     return <div>
         <div>
             <h2>Your codes:</h2>
+            {notes.map((note) => (
+                <Note note={note} onDelete={deleteSnippet} key={note.id}/>)
+            )} 
         </div>
         <h2>Create a snippet-</h2>
         <form onSubmit={createSnippet}>
