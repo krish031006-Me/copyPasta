@@ -14,6 +14,14 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+import sys
+
+# setting up sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+print("I am looking for files in:", sys.path[-1])
+import dj_database_url
 
 load_dotenv()
 
@@ -30,7 +38,7 @@ SECRET_KEY = 'django-insecure-cp5sdokw$cz1jzdkuq6+*jonag_p7m-a&mqli&0qxgyfhp@$m$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"] # for not having errors in deployment 
+ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'localhost']
 
 # This is the configuration for JWT tokens
 REST_FRAMEWORK = {
@@ -62,6 +70,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # this is for vercel deployment
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -94,12 +103,35 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# ... (rest of your imports)
+
+# 1. Default to SQLite (Local Development)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# 2. Check for 'DATABASE_URL' (Production / Vercel)
+# Vercel will provide this variable automatically once you set it.
+database_url = os.environ.get("DATABASE_URL")
+
+if database_url:
+    DATABASES['default'] = dj_database_url.parse(
+        database_url,
+        conn_max_age=600,    # persistent connections
+        conn_health_checks=True,
+        ssl_require=True,
+    )
+
+    # 3. Supabase Transaction Mode Fixes
+    # These are CRITICAL for Port 6543 to work without crashing.
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    
+    # Ensure we are using the public schema
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS']['options'] = '-c search_path=public'
 
 
 # Password validation
@@ -137,6 +169,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
