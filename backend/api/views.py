@@ -46,16 +46,25 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
 
     # we created get_queryset rather than only using queryset cause we needed access to the user
     def get_queryset(self): 
-        user = self.request.user # This is how you fetch or get the user
-        return Snippet.objects.filter(author=user) # getting all the snippets by our user
+        queryset = Snippet.objects.filter(author=self.request.user)
+        
+        type = self.request.query_params.get("type") # get the type param from the URL
+        # returning the queryset depending on the params
+        if type == "favorites":
+            return queryset.filter(is_favorite=True, in_trash=False)
+        elif type=="trash":
+            return queryset.filter(in_trash=True)
+        elif type=="recent":
+            return queryset.filter(in_trash=False).order_by("-updated_at")[:10]
+        return queryset.filter(in_trash=False).order_by("-created_at")
     
     # also we can only view the notes written by us so we create a custom function like above to handle POST request too
     def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save(author=self.request.user)
-        else:
+            serializer.save(author=self.request.user) 
+        else: 
             print(serializer.errors) 
-            return Response(serializer.errors)
+            return Response(serializer.errors) 
 
 # This is a view to delete a snippet it does the deletion by itself
 class DeleteSnippetView(generics.DestroyAPIView):
