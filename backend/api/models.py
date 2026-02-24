@@ -18,8 +18,9 @@ class Snippet(models.Model): # This is the model to store the code snippets date
     language = models.CharField(max_length=20, blank=True, null=True) 
     # the general field to store what type of content it is
     content_type = models.CharField(max_length=20, blank=True, null=True)
-    # the marker on snippet
-    marker = models.CharField(max_length=20, default="recent")
+    # These are the boolean fields
+    in_trash = models.BooleanField(default=True)
+    is_favorite = models.BooleanField(default=False)
     # for any notes
     notes = models.TextField(blank=True, null=True)
 
