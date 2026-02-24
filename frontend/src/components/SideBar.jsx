@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 
+import {Link} from "react-router"
+
 import api from "../api"
 
 import {
@@ -55,16 +57,16 @@ const flagCount = async(flag) => {
 
 // The react states used in the sidebar
 const [categories, setCategories] = useState([
-  {"name": "All Snippets", "logo": Layers, "count": getSnippetCount("all")},
-  {"name": "Code", "logo": Code2, "count": getSnippetCount("code")},
-  {"name": "Links", "logo": Link2, "count": getSnippetCount("links")},
-  {"name": "Text", "logo": FileText, "count": getSnippetCount("text")}
+  {"name": "All Snippets", "logo": Layers, "link": "all", "count": getSnippetCount("all")},
+  {"name": "Code", "logo": Code2, "link": "code", "count": getSnippetCount("code")},
+  {"name": "Links", "logo": Link2, "link": "links", "count": getSnippetCount("links")},
+  {"name": "Text", "logo": FileText, "link": "text", "count": getSnippetCount("text")}
 ]);
 
 const [collections, setCollections] = useState([ 
-  {"name": "Favorites", "logo": Star, "count": flagCount("favorites")},
-  {"name": "Recent", "logo": Clock, "count": flagCount("recent")},
-  {"name": "Trash", "logo": Trash2, "count": flagCount("trash")}
+  {"name": "Favorites", "logo": Star,  "link": "favorites", "count": flagCount("favorites")},
+  {"name": "Recent", "logo": Clock, "link": "recent", "count": flagCount("recent")},
+  {"name": "Trash", "logo": Trash2, "link": "trash","count": flagCount("trash")}
 ]) 
 
 export function AppSidebar() { 
@@ -79,11 +81,13 @@ export function AppSidebar() {
       <div className="flex items-center gap-3 border-b border-border px-5 py-5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
           <ClipboardPaste className="h-5 w-5 text-primary-foreground" /> 
-        </div>
-        <div>
-          <h1 className="text-base font-semibold tracking-tight text-foreground">
-            Copy Pasta
-          </h1>
+        </div> 
+        <div> 
+          <Link to="/">
+            <h1 className="text-base font-semibold tracking-tight text-foreground">
+              Copy Pasta
+            </h1>
+          </Link>
           <p className="text-xs text-muted-foreground">Clipboard Manager</p>
         </div>
       </div>
@@ -104,22 +108,25 @@ export function AppSidebar() {
         
         {categories.map((category) => {
           const Logo = category.logo
+          const link = category.link !== "all" ? `/api/snippets/type=?${category.link}` : "/api/snippets/"
           return(
-            <button
-              className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-                "bg-accent text-accent-foreground"
-              )}
-            >
-              <Logo className="h-4 w-4 shrink-0 text-primary" />
-              <span className="flex-1 text-left">{category.name}</span>
-              <Badge
-                variant="secondary"
-                className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-primary/15 text-primary"
+            <Link to={link}>
+              <button
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                  "bg-accent text-accent-foreground"
+                )}
               >
-                {category.count} 
-              </Badge> 
-            </button> 
+                <Logo className="h-4 w-4 shrink-0 text-primary" />
+                <span className="flex-1 text-left">{category.name}</span>
+                <Badge
+                  variant="secondary"
+                  className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-primary/15 text-primary"
+                >
+                  {category.count} 
+                </Badge> 
+              </button> 
+            </Link>
           )
         })}
 
@@ -130,37 +137,29 @@ export function AppSidebar() {
         <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Collections
         </p>
-        
-        <button
-          className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-            "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-          )}
-        >
-          <Star className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="flex-1 text-left">Favorites</span>
-          <Badge
-            variant="secondary"
-            className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-secondary text-muted-foreground"
-          >
-            6
-          </Badge>
-        </button>
-        <button
-          className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-            "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-          )}
-        >
-          <Trash2 className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="flex-1 text-left">Trash</span>
-          <Badge
-            variant="secondary"
-            className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-secondary text-muted-foreground"
-          >
-            2
-          </Badge>
-        </button>
+        { collections.map((flag) => {
+          const Logo = flag.logo
+          const link = `api/snippets/?type=${flag.link}`
+          return (
+            <Link to={link}>
+              <button
+                className={cn(
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                )}
+              >
+                <Logo className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <span className="flex-1 text-left">{ flag.name }</span>
+                <Badge
+                  variant="secondary"
+                  className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-secondary text-muted-foreground"
+                >
+                  {flag.count}
+                </Badge>
+              </button>
+            </Link>
+          )
+        })}
       </nav>
 
       {/* Footer */}
@@ -173,3 +172,5 @@ export function AppSidebar() {
     </aside>
   )
 }
+
+export default SideBar
