@@ -57,7 +57,7 @@ function Home(){
         <div>
             <h2>Your codes:</h2>
             {console.log("Going to notes component")}
-            {snippets.map((note) => (
+            {snippets.map((note) => ( 
                 <Note note={note} onDelete={deleteSnippet} key={note.id}/>)
             )} 
         </div>
