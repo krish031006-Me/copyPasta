@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useEffectEvent } from "react"
+import {useSeachParams} from "react-router"
+import api from "../api"
 
 import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -19,11 +21,53 @@ import {
 
 export default function DashboardHeader({count, setCount}) {
 
-  // The function to load the content when the user uses the search bar
-  const loadContent = async (type) => {
-    await api.get(`api/snippets/?type=${type}`)
-  }
+  // Using state to store query, results
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [searchParams] = useSeachParams();
+  // Using useEffect to control searching
+  useEffect(() => {
+    // to avoid running without a query
+    if (!query){
+      setResults([])
+      return;
+    }
 
+    // for abortion of processes
+    const controller = new AbortController()
+
+    // the function to fetch the results
+    const fetchResults = async () => {
+      const type = searchParams.get("type");
+      try{
+        const response = await api.get(`api/snippets/?type=${type}`, {
+          params: query,
+          signal: controller.signal // sending the signal with the request
+        })
+
+        setResults(response.data)
+      }catch(err){
+        if (err.name === "CanceledError" || err.name === "ERR_CANCELED"){
+          console.log("Request cancelled")
+        }else{
+          console.log("internal search error")
+        }
+      }
+    };
+    
+    // The fucntion to call fetchResults
+    const timeoutId = setTimeout(() => {
+      fetchResults()
+    },500)
+
+    // the cleanup return statement
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort(); // aborting the process before starting a new one
+    }
+
+  }, query);
+  
   // Using the state to store the labels on dashbaord
   const labels = useState([
     {"name":"All Snippets", "url": "all"},
@@ -62,6 +106,8 @@ export default function DashboardHeader({count, setCount}) {
             type="text"
             placeholder="Search your library"
             className="h-9 bg-background pl-9 text-sm text-foreground placeholder:text-muted-foreground"
+            value={query}
+            onChange={(e) => {setQuery(e.target.value)}} // setting the value
           />
         </div> 
 
