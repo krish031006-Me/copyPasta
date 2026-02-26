@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 
+import {count, setCount} from "./SideBar"
 /*
 import {
   Tooltip,
@@ -15,42 +16,54 @@ import {
 } from "@/components/ui/tooltip"
 */
 
-// Using the state to store the labels on dashbaord
-const labels = useState([
-    {"name":"All Snippets"},
-    {"name":"Codes"},
-    {"name":"Links"},
-    {"name":"Texts"},
-    {"name":"Favorites"},
-    {"name":"Trash"},
-    {"name":"Recent"}
-])
 
-export default function DashboardHeader() {
+export default function DashboardHeader({count, setCount}) {
+
+  // The function to load the content when the user uses the search bar
+  const loadContent = async (type) => {
+    await api.get(`api/snippets/?type=${type}`)
+  }
+
+  // Using the state to store the labels on dashbaord
+  const labels = useState([
+    {"name":"All Snippets", "url": "all"},
+    {"name":"Codes", "url": "codes"},
+    {"name":"Links", "url": "links"},
+    {"name":"Texts", "url": "texts"},
+    {"name":"Favorites", "url": "favorites"},
+    {"name":"Trash", "url": "trash"},
+    {"name":"Recent", "url": "recent"}
+  ])
+  
   return (
     <header className="flex flex-col gap-4 border-b border-border bg-card px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">
-          All Snippets
-        </h2>
-        <Badge
-          variant="secondary"
-          className="rounded-md bg-primary/10 text-primary text-xs font-semibold"
-        >
-          12
-        </Badge>
-      </div>
+      {labels.map((label) => {
+
+        return (
+          <div className="flex items-center gap-3">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              {label.name}
+              </h2>
+              <Badge
+              variant="secondary"
+              className="rounded-md bg-primary/10 text-primary text-xs font-semibold"
+              >
+              {count[label.url]}
+              </Badge>
+          </div>
+        )
+      })}
 
       <div className="flex items-center gap-2">
         {/* Search */}
         <div className="relative w-full lg:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /> 
           <Input
             type="text"
-            placeholder="Search snippets..."
+            placeholder="Search your library"
             className="h-9 bg-background pl-9 text-sm text-foreground placeholder:text-muted-foreground"
           />
-        </div>
+        </div> 
 
         {/* Filter Button */}
         <Tooltip>
