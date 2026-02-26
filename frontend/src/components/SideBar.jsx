@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import {Link} from "react-router"
 
@@ -22,54 +22,42 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// This is the function to get the snippet count
-const getSnippetCount = async (sortBy) => {
-  await api.get("api/snippets/") 
-  .then((res) => res = res.data)
-  .catch((err) => {
-    console.log(err)
-  })
-
-  // getting the count
-  if (sortBy === "all"){
-    return res.data.count
-  }else{
-    // we wanna get only the results with out content_type
-    count = 0
-    (res.data.results).forEach((result) => {
-      if (result.content_type === sortBy){
-        count ++;
-      }
-    });
-    return count
-  }
-}
-
-// This is the function to get flag count
-const flagCount = async(flag) => {
-  await api.get(`api/snippets/?type=${flag}/`)
-  .then((res) => res = res.data.count) 
-  .catch((err) => {
-    console.log(err)
-  })
-  return res
-}
-
-// The react states used in the sidebar
-const [categories, setCategories] = useState([
-  {"name": "All Snippets", "logo": Layers, "link": "all", "count": getSnippetCount("all")},
-  {"name": "Code", "logo": Code2, "link": "code", "count": getSnippetCount("code")},
-  {"name": "Links", "logo": Link2, "link": "links", "count": getSnippetCount("links")},
-  {"name": "Text", "logo": FileText, "link": "text", "count": getSnippetCount("text")}
-]);
-
-const [collections, setCollections] = useState([ 
-  {"name": "Favorites", "logo": Star,  "link": "favorites", "count": flagCount("favorites")},
-  {"name": "Recent", "logo": Clock, "link": "recent", "count": flagCount("recent")},
-  {"name": "Trash", "logo": Trash2, "link": "trash","count": flagCount("trash")}
-]) 
-
 export function AppSidebar() { 
+
+  // Using state to store the count
+  const [count, setCount] = useState({})
+
+  // This is the react function to store all the counts of values in state
+  useEffect(() => {
+    const types = ["all", "code", "links", "text", "favorites", "recent", "trash"]
+    // This is the function to get the count
+    async function LoadCounts() {
+      results = {}
+      await Promise.all(
+        types.map(async (type) => {
+          const res = await api.get(`api/snippets/?type=${type}`)
+          results[type] = res.data.count
+        })
+      )
+      setCount(results)
+    }
+    LoadCounts()
+  }, [])
+
+  // The react states used in the sidebar
+  const [categories, setCategories] = useState([
+    {"name": "All Snippets", "logo": Layers, "link": "all"},
+    {"name": "Code", "logo": Code2, "link": "code"},
+    {"name": "Links", "logo": Link2, "link": "links"},
+    {"name": "Text", "logo": FileText, "link": "text"}
+  ]);
+
+  const [collections, setCollections] = useState([ 
+    {"name": "Favorites", "logo": Star,  "link": "favorites"},
+    {"name": "Recent", "logo": Clock, "link": "recent"},
+    {"name": "Trash", "logo": Trash2, "link": "trash"}
+  ]) 
+
   return (
     <aside 
       className={cn(
@@ -123,7 +111,7 @@ export function AppSidebar() {
                   variant="secondary"
                   className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-primary/15 text-primary"
                 >
-                  {category.count} 
+                  {count[category.name]} 
                 </Badge> 
               </button> 
             </Link>
