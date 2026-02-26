@@ -56,6 +56,8 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             return queryset.filter(in_trash=True)
         elif type=="recent":
             return queryset.filter(in_trash=False).order_by("-updated_at")[:10]
+        elif type in ["code", "link", "text"]:
+            return queryset.filter(content_type=type)[:10]
         return queryset.filter(in_trash=False).order_by("-created_at")
     
     # also we can only view the notes written by us so we create a custom function like above to handle POST request too
