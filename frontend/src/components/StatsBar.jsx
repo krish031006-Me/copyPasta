@@ -4,7 +4,7 @@ import { Clipboard, Code2, Link2, FileText } from "lucide-react"
 import { cn } from "@/lib/utils" 
 import { useState, useEffect } from "react"
 
-export function StatsBar({ count, refreshCount }){ 
+export function StatsBar({ count }){ 
 
     // We need to get the percentage of the snippets
     const[part, setPart] = useState({})

@@ -8,8 +8,8 @@ import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-
 import {count, setCount} from "./SideBar"
+
 /*
 import {
   Tooltip,
@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/tooltip"
 */
 
-
-export default function DashboardHeader({count, setCount}) {
+export default function DashboardHeader({ count, refreshCount }) {
 
   // Using state to store query, results
   const [query, setQuery] = useState('');
