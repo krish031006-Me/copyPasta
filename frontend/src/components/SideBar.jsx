@@ -4,8 +4,6 @@ import { useState, useEffect } from "react"
 
 import {Link} from "react-router"
 
-import api from "../api"
-
 import {
   Code2,
   Link2,
@@ -22,27 +20,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-export function AppSidebar() { 
-
-  // Using state to store the count
-  const [count, setCount] = useState({})
-
-  // This is the react function to store all the counts of values in state
-  useEffect(() => {
-    const types = ["all", "code", "links", "text", "favorites", "recent", "trash"]
-    // This is the function to get the count
-    async function LoadCounts() {
-      results = {}
-      await Promise.all(
-        types.map(async (type) => {
-          const res = await api.get(`api/snippets/?type=${type}`)
-          results[type] = res.data.count
-        })
-      )
-      setCount(results)
-    }
-    LoadCounts()
-  }, [])
+export function AppSidebar({ count, refreshCount }) { 
 
   // The react states used in the sidebar
   const [categories, setCategories] = useState([
@@ -72,7 +50,7 @@ export function AppSidebar() {
         </div> 
         <div> 
           <Link to="/">
-            <h1 className="text-base font-semibold tracking-tight text-foreground">
+            <h1 className="text-base font-semibold tracking-tight text-foreground cursor-pointer">
               Copy Pasta
             </h1>
           </Link>
@@ -82,7 +60,7 @@ export function AppSidebar() {
 
       {/* New Snippet Button */}
       <div className="px-3 pt-4 pb-2">
-        <Button className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
           <Plus className="h-4 w-4" />
           New Snippet
         </Button>
@@ -101,7 +79,7 @@ export function AppSidebar() {
             <Link to={link}>
               <button
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
                   "bg-accent text-accent-foreground"
                 )}
               >
@@ -132,7 +110,7 @@ export function AppSidebar() {
             <Link to={link}>
               <button
                 className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
                 "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                 )}
               >
@@ -152,7 +130,7 @@ export function AppSidebar() {
 
       {/* Footer */}
       <div className="border-t border-border p-3">
-        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-150 hover:bg-accent/50 hover:text-foreground">
+        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-150 hover:bg-accent/50 hover:text-foreground cursor-pointer">
           <Settings className="h-4 w-4 shrink-0" />
           <span>Settings</span>
         </button>
