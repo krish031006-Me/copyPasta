@@ -1,7 +1,7 @@
 "use client"
 
 import { Clipboard, Code2, Link2, FileText } from "lucide-react"
-import { cn } from "@/lib/utils" 
+import { cn } from "../lib/utils.js"
 import { useState, useEffect } from "react"
 
 export function StatsBar({ count }){ 
