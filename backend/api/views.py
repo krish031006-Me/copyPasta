@@ -56,7 +56,7 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             return queryset.filter(in_trash=True)
         elif type=="recent":
             return queryset.filter(in_trash=False).order_by("-updated_at")[:10]
-        elif type in ["code", "link", "text"]:
+        elif type in ["codes", "links", "texts"]:
             return queryset.filter(content_type=type)[:10]
         return queryset.filter(in_trash=False).order_by("-created_at")
     
