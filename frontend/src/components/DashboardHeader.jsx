@@ -5,10 +5,9 @@ import {useSeachParams} from "react-router"
 import api from "../api"
 
 import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react"
-import { cn } from "../lib/utils"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import {count, setCount} from "./SideBar"
+import { cn } from "../lib/utils.js"
+import { Input } from "./ui/input.jsx"
+import { Badge } from "./ui/badge.jsx"
 
 /*
 import {
