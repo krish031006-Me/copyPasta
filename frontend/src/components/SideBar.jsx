@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 
 import {Link} from "react-router"
@@ -17,8 +15,8 @@ import {
   Settings,
 } from "lucide-react"
 import { cn } from "../lib/utils.js"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "./ui/badge.jsx"
+import { Button } from "./ui/button.jsx"
 
 export function AppSidebar({ count, refreshCount }) { 
 
