@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # These below are our models
+class Badges(models.Model):
+    badge = models.TextField(max_length=20, blank=True, null=True)
+    color = models.TextField(max_length=20, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
 class Snippet(models.Model): # This is the model to store the code snippets date captions and other information
     # this is for the user that is creating this code snippet
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="snippet") 
@@ -23,6 +30,8 @@ class Snippet(models.Model): # This is the model to store the code snippets date
     is_favorite = models.BooleanField(default=False)
     # for any notes
     notes = models.TextField(blank=True, null=True)
+    # the badges for the content that would be created by AI
+    badges = models.ManyToManyField(Badges, blank=True)
 
     class meta: # This is blueprint defines how the models behave as a whole
         ordering = ["-created_at"] # minus sign means descending without minus it's ascending
