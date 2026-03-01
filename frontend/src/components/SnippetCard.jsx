@@ -1,4 +1,5 @@
-// Removed 'useState' since logic is stripped
+// This component is used to display only one snippet individually 
+
 import {
   Copy,
   Star,
@@ -25,21 +26,38 @@ import {
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu.jsx"
 
-export function SnippetCard({ snippets, refreshSnippets }) {
+export function SnippetCard({ snippet, onToggleFavorite }) {
   
-  // -----------------------------------------------------------------------
-  // TODO: WRITE YOUR LOGIC HERE
-  // 1. Accept props (e.g. { snippet, onCopy, onDelete })
-  // 2. Define your category colors/icons map
-  // 3. Handle state (e.g. isCopied, isFavorite)
-  // -----------------------------------------------------------------------
-
+  const categoryConfig = {
+    code: {
+      icon: Code2,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary/20",
+    },
+    links: {
+      icon: Link2,
+      color: "text-chart-2",
+      bgColor: "bg-chart-2/10",
+      borderColor: "border-chart-2/20",
+    },
+    text: {
+      icon: FileText,
+      color: "text-chart-5",
+      bgColor: "bg-chart-5/10",
+      borderColor: "border-chart-5/20",
+    },
+  }
+  // This is the config for the category
+  const config = categoryConfig[snippet.content_type]
+  const Icon = config.icon
+  
   return (
     <div
       className={cn(
         "group relative flex flex-col rounded-xl border bg-card p-4 transition-all duration-200",
         "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
-        "border-primary/20" // Placeholder border color
+        config.borderColor // Placeholder border color
       )}
     >
       {/* Header */}
@@ -48,18 +66,17 @@ export function SnippetCard({ snippets, refreshSnippets }) {
           <div
             className={cn(
               "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-              "bg-primary/10" // Placeholder background color
+              config.bgColor // Placeholder background color
             )}
           >
-            {/* Replace Code2 with dynamic Icon based on category */}
-            <Code2 className={cn("h-4 w-4", "text-primary")} />
+            <Icon className={cn("h-4 w-4", "text-primary")} />
           </div>
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold text-foreground">
-              Snippet Title {/* Placeholder Title */}
+              { snippet.title }
             </h3>
             <p className="text-xs text-muted-foreground">
-              Oct 24, 2024 {/* Placeholder Date */}
+              { snippet.updated_at }
             </p>
           </div>
         </div>
@@ -72,12 +89,18 @@ export function SnippetCard({ snippets, refreshSnippets }) {
                   "rounded-md p-1.5 transition-colors",
                   "text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground"
                 )}
+                onClick={() => onToggleFavorite(snippet.id)} // This is the function to toggle the favorite
               >
-                <Star className="h-3.5 w-3.5" />
+                <Star 
+                className={cn(
+                  "h-3.5 w-3.5",
+                  snippet.isFavorite && "fill-yellow-300"
+                )}
+                />
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              Add to favorites
+              {snippet.isFavorite ? "Remove from favorites" : "Add to favorites"}
             </TooltipContent>
           </Tooltip>
 
@@ -91,9 +114,9 @@ export function SnippetCard({ snippets, refreshSnippets }) {
               align="end"
               className="w-40 bg-popover text-popover-foreground"
             >
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCopy}>
                 <Copy className="mr-2 h-3.5 w-3.5" />
-                Copy
+                Copy 
               </DropdownMenuItem>
               
               {/* Optional: External Link Item */}
