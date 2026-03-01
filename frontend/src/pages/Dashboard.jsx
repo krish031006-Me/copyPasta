@@ -11,7 +11,7 @@ function Dashboard(){
     const [snippets, setSnippets] = useState([]);
     const [count, setCount] = useState({});
     const [searchParam] = useSearchParams();
-
+    const [isCopied, setIsCopied] = useState(false);
     // This is the function to toggle the favorite state of a snippet
     const toggleFavorite = async (key) => {
         try {
@@ -34,6 +34,46 @@ function Dashboard(){
         }
     }
         
+    // This is the function to control the copying of content
+    const handleCopy = async(text) => {
+        try{
+            await navigator.clipboard.writeText(text) // Storing in the clipboard
+            setIsCopied(true)
+            // returning to false after 2.0 seconds
+            setTimeout(() => {
+                setIsCopied(false)
+            }, 2000)
+            alert("Copied to clipboard")
+        }catch(err){
+            console.error(err)
+        }
+
+    }
+    
+    // This is the function to handle the deletion of a snippet
+    const handleDelete = async(key) => {
+        try{
+            const res = await api.delete(`api/snippets/${key}/`)
+            if(res.status === 204){
+                // update the trash state
+                const trashRes = await api.patch(`api/snippets/${key}`,{
+                    in_trash: true
+                })
+                if(trashRes.status === 200){
+                    // update the snippets
+                    const updated = snippets.filter((s) => s.id !== key)
+                    setSnippets(updated)
+                }else{
+                    console.error("Failed to update trash state")
+                }
+            }else{
+                console.log("Couldn't delete the snippet")
+            }
+        }catch(err){ 
+            console.log(err)
+        }
+    }
+
     // This is the function to get the count
     async function LoadCounts() {
         const types = ["all", "code", "links", "text", "favorites", "recent", "trash"]
@@ -79,7 +119,13 @@ function Dashboard(){
             {/* The lg:grid-cols-3 is the number of columns in the grid on large screens */}
             <div className="grid gap-4 p-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {snippets.map((snippet) => (
-                    <SnippetCard snippet={snippet} onToggleFavorite={toggleFavorite}/>
+                    <SnippetCard 
+                        snippet={snippet}
+                        onToggleFavorite={toggleFavorite} 
+                        handleCopy={handleCopy} 
+                        isCopied={isCopied} 
+                        handleDelete={handleDelete}    
+                    />
                 ))}
             </div>
         </div>
