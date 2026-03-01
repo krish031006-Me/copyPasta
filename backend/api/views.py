@@ -69,11 +69,11 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             return Response(serializer.errors) 
 
 # This is a view to delete a snippet it does the deletion by itself
-class DeleteSnippetView(generics.DestroyAPIView):
+class DeleteUpdateSnippetView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=SnippetModelSerializer
     permission_classes=[IsAuthenticated]
 
-    # this is the custom method to handle the queryset
+    # this is the custom method to handle the queryset 
     def get_queryset(self):
         user = self.request.user
         return Snippet.objects.filter(author=user)

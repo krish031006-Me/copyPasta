@@ -9,5 +9,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name="refresh"), # This is used as our login route 
     path("snippets/", CreateSnippetView.as_view(), name="snippet-list"),
     # <int:pk> is like a pathconverter tells to expect a number here
-    path("snippets/delete/<int:pk>/", DeleteSnippetView.as_view(), name="snippet-destroy")
+    path("snippets/delete/<int:pk>/", DeleteUpdateSnippetView.as_view(), name="snippet-destroy")
 ]
