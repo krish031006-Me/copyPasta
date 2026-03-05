@@ -1,4 +1,6 @@
 // This component is used to display only one snippet individually 
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'; // VS Code Dark Theme
 
 import {
   Copy,
@@ -26,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu.jsx"
 
-export function SnippetCard({ snippet, onToggleFavorite }) {
+export function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied }) {
   
   const categoryConfig = {
     code: {
@@ -114,7 +116,7 @@ export function SnippetCard({ snippet, onToggleFavorite }) {
               align="end"
               className="w-40 bg-popover text-popover-foreground"
             >
-              <DropdownMenuItem onClick={handleCopy}>
+              <DropdownMenuItem onClick={handleCopy} disabled={isCopied}>
                 <Copy className="mr-2 h-3.5 w-3.5" />
                 Copy 
               </DropdownMenuItem>
@@ -130,6 +132,7 @@ export function SnippetCard({ snippet, onToggleFavorite }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
+                onClick={handleDelete}
               >
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
                 Delete
@@ -147,36 +150,48 @@ export function SnippetCard({ snippet, onToggleFavorite }) {
         )}
       >
         <p className="line-clamp-4 whitespace-pre-wrap break-all">
-          console.log("Hello World"); {/* Placeholder Content */}
+          { snippet.content_type === "code" ? (
+            <SyntaxHighlighter> 
+              language={snippet.language}
+              style={vscDarkPlus}
+              showLineNumbers={true}
+            </SyntaxHighlighter> 
+          ) : (
+            snippet.code
+          )}
         </p>
       </div>
 
       {/* Tags */}
       <div className="mb-3 flex flex-wrap gap-1.5">
-        {/* Blueprint: A single Tag Badge */}
-        <Badge
-          variant="secondary"
-          className="rounded-md bg-secondary text-muted-foreground px-2 py-0 text-[10px] font-medium"
-        >
-          React {/* Placeholder Tag */}
-        </Badge>
-        
-        {/* Blueprint: Language Badge */}
-        <Badge
-          variant="outline"
-          className={cn(
-            "rounded-md px-2 py-0 text-[10px] font-medium",
-            "text-primary border-primary/20"
-          )}
-        >
-          javascript {/* Placeholder Language */}
-        </Badge>
+        {
+          snippet.badges.map((badge) => {
+            snippet.language === badge ? (
+              <Badge
+                variant="outline"
+                className={cn(
+                  "rounded-md px-2 py-0 text-[10px] font-medium",
+                  "text-primary border-primary/20"
+                )}
+              >
+                { badge }
+              </Badge>
+            ) : (
+              <Badge
+                variant="secondary"
+                className="rounded-md bg-secondary text-muted-foreground px-2 py-0 text-[10px] font-medium"
+              >
+                { badge }
+              </Badge>
+            )
+          })
+        }
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-border pt-3">
         <span className="text-[10px] text-muted-foreground">
-          Copied 12 times {/* Placeholder Count */}
+          { snippet.updated_at }
         </span>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -185,6 +200,8 @@ export function SnippetCard({ snippet, onToggleFavorite }) {
                 "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all duration-200",
                 "bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
+              disabled={isCopied}
+              onClick={handleCopy}
             >
               <Copy className="h-3 w-3" />
               Copy
