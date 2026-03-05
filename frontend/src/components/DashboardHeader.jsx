@@ -1,28 +1,26 @@
-"use client"
-
 import { useState, useEffect, useEffectEvent } from "react"
-import {useSeachParams} from "react-router"
-import api from "../api"
+import {useSearchParams} from "react-router"
+import api from "../api" 
 
 import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react"
 import { cn } from "../lib/utils.js"
 import { Input } from "./ui/input.jsx"
 import { Badge } from "./ui/badge.jsx"
 
-/*
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-*/
+} from "./ui/ToolTip.jsx"
+
 
 export default function DashboardHeader({ count, refreshCount }) {
 
   // Using state to store query, results
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [searchParams] = useSeachParams();
+  const [searchParams] = useSearchParams();
   // Using useEffect to control searching
   useEffect(() => {
     // to avoid running without a query
@@ -64,7 +62,7 @@ export default function DashboardHeader({ count, refreshCount }) {
       controller.abort(); // aborting the process before starting a new one
     }
 
-  }, query);
+  }, [query]);
   
   // Using the state to store the labels on dashbaord
   const labels = useState([

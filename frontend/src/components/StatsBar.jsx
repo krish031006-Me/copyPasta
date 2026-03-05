@@ -2,7 +2,7 @@ import { Clipboard, Code2, Link2, FileText } from "lucide-react"
 import { cn } from "../lib/utils.js"
 import { useState, useEffect } from "react"
 
-export function StatsBar({ count }){ 
+export default function StatsBar({ count }){ 
 
     // We need to get the percentage of the snippets
     const[part, setPart] = useState({})
@@ -74,7 +74,7 @@ export function StatsBar({ count }){
                     stat.bgColor
                 )}
                 >
-                <Icon className={cn("h-5 w-5", stat.color)} />
+                <Icon className={cn("h-5 w-5", stat.color)} /> 
                 </div>
                 <div>
                 <p className="text-lg font-bold text-foreground">{stat.value}</p>

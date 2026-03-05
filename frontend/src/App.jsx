@@ -5,6 +5,7 @@ import Register from "./pages/Register"
 import NotFound from "./pages/NotFound"
 import Home from "./pages/Home"
 import ProtectedRoute from "./components/ProtectedRoute" 
+import Dashboard from "./pages/Dashboard"
 
 // This is the logout function
 function Logout(){
@@ -50,6 +51,9 @@ function App(){
             }>
           </Route>
           <Route path="/logout" element={<Logout></Logout>}></Route>
+          <Route path="/dashboard" element={<Dashboard />}>
+
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

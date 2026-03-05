@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 // Ensure this path points to your utils file
-import { cn } from '../lib/utils'
+import { cn } from "../../lib/utils"
 
 function Input({ className, type, ...props }) {
   return (

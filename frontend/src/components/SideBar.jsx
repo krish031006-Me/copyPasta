@@ -18,7 +18,7 @@ import { cn } from "../lib/utils.js"
 import { Badge } from "./ui/badge.jsx"
 import { Button } from "./ui/button.jsx"
 
-export function AppSidebar({ count, refreshCount }) { 
+export default function Sidebar({ count, refreshCount }) { 
 
   // The react states used in the sidebar
   const [categories, setCategories] = useState([
@@ -72,9 +72,9 @@ export function AppSidebar({ count, refreshCount }) {
         
         {categories.map((category) => {
           const Logo = category.logo
-          const link = category.link !== "all" ? `/api/snippets/type=?${category.link}` : "/api/snippets/"
+          const link = category.link !== "all" ? `/api/snippets/?type=${category.link}` : "/api/snippets/"
           return(
-            <Link to={link}>
+            <Link to={link} key={category.name}>
               <button
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
@@ -105,7 +105,7 @@ export function AppSidebar({ count, refreshCount }) {
           const Logo = flag.logo
           const link = `api/snippets/?type=${flag.link}`
           return (
-            <Link to={link}>
+            <Link to={link} key={flag.name}>
               <button
                 className={cn(
                 "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
@@ -136,5 +136,3 @@ export function AppSidebar({ count, refreshCount }) {
     </aside>
   )
 }
-
-export default SideBar

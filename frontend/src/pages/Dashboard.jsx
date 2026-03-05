@@ -1,9 +1,9 @@
-import { SideBar } from "../components/SideBar"
-import { DashboardHeader } from "../components/DashboardHeader"
-import { StatsBar } from "../components/StatsBar"
+import SideBar from "../components/SideBar"
+import DashboardHeader  from "../components/DashboardHeader" 
+import StatsBar from "../components/StatsBar"
 import { useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
-import { SnippetCard } from "../components/SnippetCard"
+import SnippetCard from "../components/SnippetCard"
 import api from "../api"
 
 function Dashboard(){

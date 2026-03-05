@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu.jsx"
 
-export function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied }) {
+export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied }) {
   
   const categoryConfig = {
     code: {
@@ -107,7 +107,7 @@ export function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied })
           </Tooltip>
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild> 
               <button className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-colors group-hover:opacity-100 hover:text-foreground">
                 <MoreHorizontal className="h-3.5 w-3.5" />
               </button>
