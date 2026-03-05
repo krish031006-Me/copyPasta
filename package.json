@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
-    "class-variance-authority": "^0.7.1"
+    "class-variance-authority": "^0.7.1",
+    "react-syntax-highlighter": "^16.1.1"
   }
 }
