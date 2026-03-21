@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import SnippetCard from "../components/SnippetCard"
 import api from "../api"
+import "../styles/global.css"
 
 function Dashboard(){
     // Using state to store the count and snippets
@@ -106,28 +107,28 @@ function Dashboard(){
     }, [searchParam])
 
     return (
-        <div>
-            <SideBar count={count} refreshCount={LoadCounts} />
-            <DashboardHeader count={count} />
-            <StatsBar count={count} />
-            {/* This div below is a wrapper to display the snippets in a grid */}
-            {/* The grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 is a responsive grid layout */}
-            {/* The gap-4 is the gap between the snippets */}
-            {/* The p-6 is the padding */}
-            {/* The grid-cols-1 is the number of columns in the grid */}
-            {/* The sm:grid-cols-2 is the number of columns in the grid on small screens */}
-            {/* The lg:grid-cols-3 is the number of columns in the grid on large screens */}
-            <div className="grid gap-4 p-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {snippets.map((snippet) => (
-                    <SnippetCard 
-                        snippet={snippet}
-                        onToggleFavorite={toggleFavorite} 
-                        handleCopy={handleCopy} 
-                        isCopied={isCopied} 
-                        handleDelete={handleDelete}    
-                    />
-                ))}
+        <div className="flex min-h-screen bg-background">
+            <div className="shrink-0">
+                <SideBar count={count} refreshCount={LoadCounts} />
             </div>
+
+            <main className="flex-1">
+                <DashboardHeader count={count} />
+                <StatsBar count={count} />
+
+                <div className="grid gap-4 p-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {snippets.map((snippet) => (
+                        <SnippetCard
+                            key={snippet.id}
+                            snippet={snippet}
+                            onToggleFavorite={toggleFavorite}
+                            handleCopy={handleCopy}
+                            isCopied={isCopied}
+                            handleDelete={handleDelete}
+                        />
+                    ))}
+                </div>
+            </main>
         </div>
     )
 }
