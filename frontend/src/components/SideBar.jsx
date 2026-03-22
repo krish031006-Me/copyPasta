@@ -17,15 +17,17 @@ import {
 import { cn } from "../lib/utils.js"
 import { Badge } from "./ui/badge.jsx"
 import { Button } from "./ui/button.jsx"
+import api from "../api.js"
+import { ACCESS_TOKEN } from "../constants.js"
 
-export default function Sidebar({ count, refreshCount }) { 
+export default function Sidebar({ count, refreshCount, setSnippets, setShowing, showing}) { 
 
   // The react states used in the sidebar
   const [categories, setCategories] = useState([
     {"name": "All Snippets", "logo": Layers, "link": "all"},
-    {"name": "Code", "logo": Code2, "link": "code"},
+    {"name": "Codes", "logo": Code2, "link": "code"},
     {"name": "Links", "logo": Link2, "link": "links"},
-    {"name": "Text", "logo": FileText, "link": "text"}
+    {"name": "Texts", "logo": FileText, "link": "text"}
   ]);
 
   const [collections, setCollections] = useState([ 
@@ -33,6 +35,25 @@ export default function Sidebar({ count, refreshCount }) {
     {"name": "Recent", "logo": Clock, "link": "recent"},
     {"name": "Trash", "logo": Trash2, "link": "trash"}
   ]) 
+
+  // Updating the snippets
+  const changeContent = async (link, name) => {
+    try{
+      const token = localStorage.getItem(ACCESS_TOKEN)
+      const res = await api.get(link, {
+        headers: {
+          Authorization: `Bearer ${token}` // This tells the backend who you are!
+        }
+      });
+      const data = res.data?.results ?? res.data
+      setSnippets(Array.isArray(data) ? data : [])
+      setShowing(name)
+    }
+    catch (err){
+      console.error(err)
+      setSnippets([])
+    }
+  }
 
   return (
     <aside 
@@ -74,23 +95,23 @@ export default function Sidebar({ count, refreshCount }) {
           const Logo = category.logo
           const link = category.link !== "all" ? `/api/snippets/?type=${category.link}` : "/api/snippets/"
           return(
-            <Link to={link} key={category.name}>
-              <button
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
-                  "bg-accent text-accent-foreground"
-                )}
+            <button
+              key={category.name}
+              className={cn(
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
+                "bg-accent text-accent-foreground"
+              )}
+              onClick={() => changeContent(link, category.name)} 
+            >
+              <Logo className="h-4 w-4 shrink-0 text-primary" />
+              <span className="flex-1 text-left">{category.name}</span>
+              <Badge
+                variant="secondary" 
+                className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-primary/15 text-primary"
               >
-                <Logo className="h-4 w-4 shrink-0 text-primary" />
-                <span className="flex-1 text-left">{category.name}</span>
-                <Badge
-                  variant="secondary"
-                  className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-primary/15 text-primary"
-                >
-                  {count[category.name]} 
-                </Badge> 
-              </button> 
-            </Link>
+                {count[category.name]} 
+              </Badge> 
+            </button> 
           )
         })}
 
