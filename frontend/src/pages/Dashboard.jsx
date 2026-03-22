@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom"
 import SnippetCard from "../components/SnippetCard"
 import api from "../api"
 import "../styles/global.css"
+import { ACCESS_TOKEN } from "../constants"
 
 function Dashboard(){
     // Using state to store the count and snippets
@@ -13,6 +14,8 @@ function Dashboard(){
     const [count, setCount] = useState({});
     const [searchParam] = useSearchParams();
     const [isCopied, setIsCopied] = useState(false);
+    const [showing, setShowing] = useState("All Snippets");
+    const token = localStorage.getItem(ACCESS_TOKEN) 
     // This is the function to toggle the favorite state of a snippet
     const toggleFavorite = async (key) => {
         try {
@@ -81,7 +84,11 @@ function Dashboard(){
         const results = {}
         await Promise.all(
             types.map(async (type) => {
-            const res = await api.get(`api/snippets/?type=${type}`)
+            const res = await api.get(`api/snippets/?type=${type}`,{
+                headers: {
+                    Authorization: `Bearer ${token}` // This tells the backend who you are!
+                  } 
+            })
             results[type] = res.data.count
             })
         )
@@ -91,7 +98,11 @@ function Dashboard(){
     // This is the function to get the snippets
     const GetSnippets = async (type) => {
         try {
-            const res = await api.get(`api/snippets/?type=${type || "all"}`)
+            const res = await api.get(`api/snippets/?type=${type || "all"}`,{
+                headers: {
+                    Authorization: `Bearer ${token}` // This tells the backend who you are!
+                  }
+            })
             const data = res.data?.results ?? res.data
             setSnippets(Array.isArray(data) ? data : [])
         } catch (err) {
@@ -109,11 +120,11 @@ function Dashboard(){
     return (
         <div className="flex min-h-screen bg-background">
             <div className="shrink-0">
-                <SideBar count={count} refreshCount={LoadCounts} />
+                <SideBar count={count} refreshCount={LoadCounts} setSnippets={setSnippets} setShowing={setShowing} showing={showing}/>
             </div>
 
             <main className="flex-1">
-                <DashboardHeader count={count} />
+                <DashboardHeader count={count} showing={showing}/> 
                 <StatsBar count={count} />
 
                 <div className="grid gap-4 p-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
