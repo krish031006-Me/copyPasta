@@ -51,9 +51,14 @@ function App(){
             }>
           </Route>
           <Route path="/logout" element={<Logout></Logout>}></Route>
-          <Route path="/dashboard" element={<Dashboard />}>
-
-          </Route>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
