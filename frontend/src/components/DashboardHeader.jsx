@@ -1,4 +1,4 @@
-import { useState, useEffect, useEffectEvent } from "react"
+import { useState, useEffect } from "react"
 import {useSearchParams} from "react-router"
 import api from "../api" 
 
@@ -14,8 +14,17 @@ import {
   TooltipTrigger,
 } from "./ui/ToolTip.jsx"
 
+const DASHBOARD_LABELS = [
+  { name: "All Snippets", url: "" },
+  { name: "Codes", url: "codes" },
+  { name: "Links", url: "links" },
+  { name: "Texts", url: "texts" },
+  { name: "Favorites", url: "favorites" },
+  { name: "Trash", url: "trash" },
+  { name: "Recent", url: "recent" },
+]
 
-export default function DashboardHeader({ count, refreshCount }) {
+export default function DashboardHeader({ count, refreshCount, showing}) {
 
   // Using state to store query, results
   const [query, setQuery] = useState('');
@@ -63,36 +72,24 @@ export default function DashboardHeader({ count, refreshCount }) {
     }
 
   }, [query]);
-  
-  // Using the state to store the labels on dashbaord
-  const labels = useState([
-    {"name":"All Snippets", "url": "all"},
-    {"name":"Codes", "url": "codes"},
-    {"name":"Links", "url": "links"},
-    {"name":"Texts", "url": "texts"},
-    {"name":"Favorites", "url": "favorites"},
-    {"name":"Trash", "url": "trash"},
-    {"name":"Recent", "url": "recent"}
-  ])
-  
+
+  const label = DASHBOARD_LABELS.find((value) => value.name == showing) || { name: "All Snippets", url: "" }; 
   return (
     <header className="flex flex-col gap-4 border-b border-border bg-card px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
-      {labels.map((label) => {
-
-        return (
-          <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
-              {label.name}
-              </h2>
-              <Badge
-              variant="secondary"
-              className="rounded-md bg-primary/10 text-primary text-xs font-semibold"
-              >
-              {count[label.url]}
-              </Badge>
-          </div>
-        )
-      })}
+      
+      <div>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {label.name} 
+          </h2>
+          <Badge
+          variant="secondary"
+          className="rounded-md bg-primary/10 text-primary text-xs font-semibold"
+          >
+          {count[label.url]}
+          </Badge>
+        </div>
+      </div>  
 
       <div className="flex items-center gap-2">
         {/* Search */}
