@@ -115,7 +115,7 @@ function Dashboard(){
     useEffect(() => {
         GetSnippets(searchParam.get("type"))
         LoadCounts()
-    }, [searchParam])
+    }, [searchParam]) 
 
     return (
         <div className="flex min-h-screen bg-background">

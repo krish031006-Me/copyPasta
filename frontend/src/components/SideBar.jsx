@@ -125,24 +125,24 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
         { collections.map((flag) => {
           const Logo = flag.logo
           const link = `api/snippets/?type=${flag.link}`
+          const name = flag.name
           return (
-            <Link to={link} key={flag.name}>
-              <button
-                className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
-                "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                )}
+            <button
+              className={cn(
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
+              "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              )}
+              onClick={() => changeContent(link, name)} 
+            >
+              <Logo className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="flex-1 text-left">{ flag.name }</span>
+              <Badge
+                variant="secondary"
+                className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-secondary text-muted-foreground"
               >
-                <Logo className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <span className="flex-1 text-left">{ flag.name }</span>
-                <Badge
-                  variant="secondary"
-                  className="h-5 min-w-5 justify-center rounded-md text-[10px] font-semibold bg-secondary text-muted-foreground"
-                >
-                  {flag.count}
-                </Badge>
-              </button>
-            </Link>
+                {flag.count} 
+              </Badge>
+            </button>
           )
         })}
       </nav>
