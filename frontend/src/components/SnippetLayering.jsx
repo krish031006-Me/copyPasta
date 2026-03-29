@@ -1,25 +1,23 @@
 import { X, Sparkles, Plus } from "lucide-react";
 import { useState } from "react";
-import { api } from "../api"
+import  api from "../api"
 import { ACCESS_TOKEN } from "../constants";
 
-const PLACEHOLDER_TAGS = ["python", "algorithms"]; // We need to change these with the tags from API calls
+const PLACEHOLDER_TAGS = []; // We need to change these with the tags from API calls
 
 const QuickAddSnippetModal = ({ open, onClose }) => {
-  // TODO: Set up state variables for your form fields and UI states
   const [heading, setHeading] = useState("");
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(PLACEHOLDER_TAGS);
-  const [isAutoTagging, setIsAutoTagging] = useState(false);
-  const token = localStorage.getItem(ACCESS_TOKEN)
+  const [isAutoTagging, setIsAutoTagging] = useState(false); 
 
   const addTag = (newTag) => {
-    const trim = newTag.trim().toLowerCase()
-    if (trim && !tags.includes(trim)) { // if trim is done and tag is note repeated
+    const trimmed = String(newTag ?? "").trim().toLowerCase()
+    if (trimmed && !tags.includes(trimmed)) { // add only non-empty, unique tags
         setTags((prevTags) => {
-            return [...prevTags, newTag]
+            return [...prevTags, trimmed]
         })
         setTagInput("")
     }
@@ -37,10 +35,10 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
     // TODO: Implement logic to fetch or simulate AI-generated tags and append them
   };
 
-  const handleKeyDown = (e, newTag) => {
+  const handleKeyDown = (e) => {
     if(e.key == "Enter"){
         e.preventDefault();
-        addTag(newTag);
+        addTag(tagInput);
     }
   };
 
@@ -80,7 +78,7 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
           </div>
           <button
             onClick={onClose} 
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="p-1.5 cursor-pointer rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             <X size={18} />
           </button>
@@ -120,8 +118,8 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
-              Additional Notes{"Additional notes"}
-              <span className="text-muted-foreground font-normal">(Optional)</span> 
+              Additional Notes{""} 
+              <span className="text-muted-foreground font-normal"> (Optional)</span> 
             </label>
             <textarea
               value={notes}
@@ -151,8 +149,8 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
                   className="w-full px-3 py-2 text-sm bg-card text-foreground border border-input rounded-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition-all pr-9"
                 /> 
                 <button
-                  onClick={addTag}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => addTag(tagInput)}
+                  className="absolute cursor-pointer right-2 top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground hover:text-foreground transition-colors"
                 > 
                   <Plus size={16} /> 
                 </button>
@@ -160,7 +158,7 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
               <button
                 onClick={handleAutoTag}
                 disabled={isAutoTagging}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-all disabled:opacity-60 shadow-sm whitespace-nowrap"
+                className="inline-flex cursor-pointer items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-all disabled:opacity-60 shadow-sm whitespace-nowrap"
               >
                 <Sparkles size={14} className={isAutoTagging ? "animate-spin" : ""} />
                 {isAutoTagging ? "Tagging..." : "Auto-Tag with AI"}
@@ -177,7 +175,7 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
-                      className="hover:text-foreground transition-colors ml-0.5"
+                      className="hover:text-foreground cursor-pointer transition-colors ml-0.5"
                     >
                       <X size={12} />
                     </button>
@@ -191,13 +189,13 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
         <div className="flex items-center justify-end gap-3 px-6 py-5 mt-2 border-t border-border">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm cursor-pointer font-medium text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button 
             onClick={handleSaveSnippet}
-            className="px-5 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all shadow-sm"
+            className="px-5 py-2 text-sm font-medium cursor-pointer bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all shadow-sm"
           >
             Save Snippet
           </button>
