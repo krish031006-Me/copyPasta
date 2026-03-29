@@ -20,7 +20,7 @@ import { Button } from "./ui/button.jsx"
 import api from "../api.js"
 import { ACCESS_TOKEN } from "../constants.js"
 
-export default function Sidebar({ count, refreshCount, setSnippets, setShowing, showing}) { 
+export default function Sidebar({ count, refreshCount, setSnippets, setShowing, setIsOpen = undefined }) { 
 
   // The react states used in the sidebar
   const [categories, setCategories] = useState([
@@ -55,6 +55,14 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
     }
   }
 
+  const openNewSnippetModal = () => {
+    if (typeof setIsOpen === "function") {
+      setIsOpen(true)
+      return
+    }
+    console.error("Sidebar expected setIsOpen to be a function, but got:", setIsOpen)
+  }
+
   return (
     <aside 
       className={cn(
@@ -79,14 +87,15 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
 
       {/* New Snippet Button */}
       <div className="px-3 pt-4 pb-2">
-        <Button className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
+        <Button className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+          onClick={openNewSnippetModal}>
           <Plus className="h-4 w-4" />
           New Snippet
         </Button>
       </div>
 
       {/* Static nav items */}
-      <nav className="flex-1 space-y-1 px-3 pt-2">
+      <nav className="flex-1 space-y-1 px-3 pt-2"> 
         <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Categories
         </p>
@@ -128,6 +137,7 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
           const name = flag.name
           return (
             <button
+              key={crypto.randomUUID()}
               className={cn(
               "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
               "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
