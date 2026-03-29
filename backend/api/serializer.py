@@ -54,5 +54,5 @@ class SnippetModelSerializer(serializers.ModelSerializer):
     class Meta:
         model=Snippet
         fields="__all__"
-        extra_kwargs = {"author": {"read_only": True}}
+        extra_kwargs = {"author": {"read_only": True}} 
         # we do not need a create method as it comes by default in serializers.ModelSerializers
