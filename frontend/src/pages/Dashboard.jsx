@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import SnippetCard from "../components/SnippetCard"
 import api from "../api"
+import QuickAddSnippetModal from "../components/SnippetLayering"
 import "../styles/global.css"
 import { ACCESS_TOKEN } from "../constants"
 
@@ -15,7 +16,14 @@ function Dashboard(){
     const [searchParam] = useSearchParams();
     const [isCopied, setIsCopied] = useState(false);
     const [showing, setShowing] = useState("All Snippets");
+    const [open, setIsOpen] = useState(false);
     const token = localStorage.getItem(ACCESS_TOKEN) 
+
+    // This is the function to close that modal window 
+    const onClose = (() => {
+        setIsOpen(false)    
+    })
+
     // This is the function to toggle the favorite state of a snippet
     const toggleFavorite = async (key) => {
         try {
@@ -120,8 +128,14 @@ function Dashboard(){
     return (
         <div className="flex min-h-screen bg-background">
             <div className="shrink-0">
-                <SideBar count={count} refreshCount={LoadCounts} setSnippets={setSnippets} setShowing={setShowing} showing={showing}/>
+                <SideBar count={count} refreshCount={LoadCounts} setSnippets={setSnippets} setShowing={setShowing} showing={showing} setIsOpen={setIsOpen}/>
             </div>
+
+            {open && (
+                <div>
+                    <QuickAddSnippetModal open={open} onClose={onClose} ></QuickAddSnippetModal> 
+                </div>
+            )}
 
             <main className="flex-1">
                 <DashboardHeader count={count} showing={showing}/> 
