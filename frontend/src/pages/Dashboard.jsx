@@ -133,7 +133,7 @@ function Dashboard(){
 
             {open && (
                 <div>
-                    <QuickAddSnippetModal open={open} onClose={onClose} ></QuickAddSnippetModal> 
+                    <QuickAddSnippetModal open={open} onClose={onClose} setIsOpen={setIsOpen}></QuickAddSnippetModal> 
                 </div>
             )}
 
