@@ -55,4 +55,16 @@ class SnippetModelSerializer(serializers.ModelSerializer):
         model=Snippet
         fields="__all__"
         extra_kwargs = {"author": {"read_only": True}} 
-        # we do not need a create method as it comes by default in serializers.ModelSerializers
+
+    # we need a seperate create method to unpack the badges dict we are gonna receive from the frontend
+    def create(self, validated_data):
+        badges_data = validated_data.pop("badges", [])
+
+        snippet = super().create(validated_data)
+
+        for badge_item in badges_data:
+            badge_obj, boolean = Badges.objects.get_or_create(badge=badge_item["badge"])
+
+            snippet.badges.add(badge_obj)
+        
+        return snippet
