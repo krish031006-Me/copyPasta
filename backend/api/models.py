@@ -7,7 +7,7 @@ class Badges(models.Model):
     color = models.TextField(max_length=20, blank=True, null=True)
     
     def __str__(self):
-        return self.name
+        return self.badge 
 
 class Snippet(models.Model): # This is the model to store the code snippets date captions and other information
     # this is for the user that is creating this code snippet
