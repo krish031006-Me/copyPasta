@@ -5,7 +5,7 @@ import { ACCESS_TOKEN } from "../constants";
 
 const PLACEHOLDER_TAGS = []; // We need to change these with the tags from API calls
 
-const QuickAddSnippetModal = ({ open, onClose }) => {
+const QuickAddSnippetModal = ({ open, onClose, setIsOpen}) => {
   const [heading, setHeading] = useState("");
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
@@ -43,16 +43,30 @@ const QuickAddSnippetModal = ({ open, onClose }) => {
   };
 
   const handleSaveSnippet = async () => {
+
+    // Creating the snippet
+    const badges = []
+    tags.forEach((tag) => {
+      const obj = {badge: tag}
+
+      badges.push(obj)
+    })
     const Snippet = {
         title: heading,
-        body: content,
+        code: content,
         additional: notes,
-        Tags: tags
+        badges: badges
     }
+
+    // Sending the request
     try{
-        await api.post("api/snippets/", Snippet)
+      const res = await api.post("api/snippets/", Snippet)
+      if(res.status == 200 || res.status==201){
+        alert("Snippet Created.")
+        setIsOpen(false) // updating the state to close the modal 
+      }
     }catch(err) {
-        console.log(err);
+        console.log(err); 
     } 
   };
 
