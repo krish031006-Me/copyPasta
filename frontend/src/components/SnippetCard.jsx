@@ -66,8 +66,7 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
     }
   
   // This is the config for the category
-  const config = categoryConfig[snippet.content_type]
-  console.log(snippet)
+  const config = categoryConfig[snippet.content_type] 
   const Icon = config.icon 
   
   return (
@@ -165,7 +164,7 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
           "bg-background font-mono text-muted-foreground"
         )}
       >
-        <p className="line-clamp-4 whitespace-pre-wrap break-all">
+        <div className="line-clamp-4 whitespace-pre-wrap break-all">
           { snippet.content_type === "code" ? (
             <SyntaxHighlighter> 
               language={snippet.language}
@@ -175,8 +174,8 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
           ) : (
             snippet.code
           )}
-        </p>
-      </div>
+        </div>
+      </div> 
 
       {/* Tags */}
       <div className="mb-3 flex flex-wrap gap-1.5">
