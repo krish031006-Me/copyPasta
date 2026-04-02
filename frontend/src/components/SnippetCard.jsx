@@ -50,9 +50,25 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
       borderColor: "border-chart-5/20",
     },
   }
+
+  // This is the fucntion to handle the deletion of the snippet
+  const handleDelete = async() => {
+    try{
+      await api.delete(`api/snippets/delete/${snippet.id}/`)
+      .then((res) => {
+        if (res.status === 204){
+          alert("Snippet deleted")
+        }
+      })
+    }catch(err){
+      alert(err)
+    }
+    }
+  
   // This is the config for the category
   const config = categoryConfig[snippet.content_type]
-  const Icon = config.icon
+  console.log(snippet)
+  const Icon = config.icon 
   
   return (
     <div
