@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import Snippet
 from rest_framework_simplejwt.tokens import RefreshToken  
+from .services import inference
 
 # generics is kind of like an advance version of APIView we do not have to create 
 # methods for get, post, delete etc.
@@ -58,12 +59,22 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             return queryset.filter(in_trash=False).order_by("-updated_at")[:10]
         elif type in ["codes", "links", "texts"]:
             return queryset.filter(content_type=type)[:10]
-        return queryset.filter(in_trash=False).order_by("-created_at")
+
+        # we need to know why this in_trash filter isn't working
+        return queryset.order_by("-created_at")
     
     # also we can only view the notes written by us so we create a custom function like above to handle POST request too
     def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save(author=self.request.user) 
+            ai_result = inference(serializer.validated_data['code'])
+            print(ai_result)
+            content_type = ai_result.get('content_type').strip('').lower()
+            try:
+                language = ai_result.get('language').strip('').lower()
+            except Exception as e:
+                print(e)
+                language = None
+            serializer.save(author=self.request.user, content_type=content_type, language=language) 
         else: 
             print(serializer.errors) 
             return Response(serializer.errors) 
