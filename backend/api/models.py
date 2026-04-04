@@ -26,7 +26,7 @@ class Snippet(models.Model): # This is the model to store the code snippets date
     # the general field to store what type of content it is
     content_type = models.CharField(max_length=20, blank=True, null=True)
     # These are the boolean fields
-    in_trash = models.BooleanField(default=True)
+    in_trash = models.BooleanField(default=False)
     is_favorite = models.BooleanField(default=False)
     # for any notes
     notes = models.TextField(blank=True, null=True)
