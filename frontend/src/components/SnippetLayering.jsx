@@ -5,7 +5,7 @@ import { ACCESS_TOKEN } from "../constants";
 
 const PLACEHOLDER_TAGS = []; // We need to change these with the tags from API calls
 
-const QuickAddSnippetModal = ({ open, onClose, setIsOpen, setSnippets}) => {
+const QuickAddSnippetModal = ({ open, onClose, setIsOpen}) => {
   const [heading, setHeading] = useState("");
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
@@ -63,8 +63,6 @@ const QuickAddSnippetModal = ({ open, onClose, setIsOpen, setSnippets}) => {
       const res = await api.post("api/snippets/", Snippet)
       if(res.status == 200 || res.status==201){
         alert("Snippet Created.")
-        console.log(res.data) 
-        setSnippets(prevSnippets => [res.data, ...prevSnippets])
         setIsOpen(false) // updating the state to close the modal 
       }
     }catch(err) {

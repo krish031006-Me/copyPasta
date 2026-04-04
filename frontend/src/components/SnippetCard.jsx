@@ -1,6 +1,7 @@
 // This component is used to display only one snippet individually 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'; // VS Code Dark Theme
+
 import {
   Copy,
   Star,
@@ -27,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu.jsx"
 
-export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied, handleDelete}) {
+export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isCopied }) {
   
   const categoryConfig = {
     code: {
@@ -36,7 +37,7 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
       bgColor: "bg-primary/10",
       borderColor: "border-primary/20",
     },
-    link: {
+    links: {
       icon: Link2,
       color: "text-chart-2",
       bgColor: "bg-chart-2/10",
@@ -50,25 +51,23 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
     },
   }
 
-  const config =
-    categoryConfig[snippet.content_type] ?? categoryConfig.text
-  const Icon = config.icon
-
-  let link = undefined
-  if(snippet.content_type === "link"){
-    link = snippet.code
-  }
+  // This is the fucntion to handle the deletion of the snippet
+  const handleDelete = async() => {
+    try{
+      await api.delete(`api/snippets/delete/${snippet.id}/`)
+      .then((res) => {
+        if (res.status === 204){
+          alert("Snippet deleted")
+        }
+      })
+    }catch(err){
+      alert(err)
+    }
+    }
   
-  
-  const date = new Date(snippet.updated_at);
-  const actualDate = date.toLocaleDateString("en-US", {
-    month: "short",  
-    day: "numeric",  
-    year: "numeric", 
-    hour: "2-digit", 
-    minute: "2-digit"
-  });
-  
+  // This is the config for the category
+  const config = categoryConfig[snippet.content_type] 
+  const Icon = config.icon 
   
   return (
     <div
@@ -87,14 +86,14 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
               config.bgColor // Placeholder background color
             )}
           >
-            <Icon className={cn("h-4 w-4", config.color)} />
+            <Icon className={cn("h-4 w-4", "text-primary")} />
           </div>
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold text-foreground">
               { snippet.title }
             </h3>
             <p className="text-xs text-muted-foreground">
-              { actualDate } 
+              { snippet.updated_at }
             </p>
           </div>
         </div>
@@ -103,26 +102,22 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
           <Tooltip>
             <TooltipTrigger asChild>
               <button
-                type="button"
                 className={cn(
-                  "rounded-md p-1.5 transition-colors opacity-0 group-hover:opacity-100",
-                  !snippet.is_favorite &&
-                    "text-muted-foreground hover:text-foreground"
+                  "rounded-md p-1.5 transition-colors",
+                  "text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground"
                 )}
-                onClick={() => onToggleFavorite(snippet.id)}
+                onClick={() => onToggleFavorite(snippet.id)} // This is the function to toggle the favorite
               >
-                <Star
-                  className={cn(
-                    "h-3.5 w-3.5 shrink-0 transition-colors",
-                    snippet.is_favorite
-                      ? "fill-amber-400 text-amber-400"
-                      : "fill-transparent text-muted-foreground"
-                  )}
+                <Star 
+                className={cn(
+                  "h-3.5 w-3.5",
+                  snippet.isFavorite && "fill-yellow-300"
+                )}
                 />
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              {snippet.is_favorite ? "Remove from favorites" : "Add to favorites"}
+              {snippet.isFavorite ? "Remove from favorites" : "Add to favorites"}
             </TooltipContent>
           </Tooltip>
 
@@ -136,25 +131,23 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
               align="end"
               className="w-40 bg-popover text-popover-foreground"
             >
-              <DropdownMenuItem onClick={()=>handleCopy(snippet.code)} disabled={isCopied}>
-                <Copy className="mr-2 h-3.5 w-3.5" /> 
+              <DropdownMenuItem onClick={handleCopy} disabled={isCopied}>
+                <Copy className="mr-2 h-3.5 w-3.5" />
                 Copy 
               </DropdownMenuItem>
               
               {/* Optional: External Link Item */}
-              {link && (
-                <DropdownMenuItem asChild>
-                <a href={link} target="_blank" rel="noopener noreferrer">
+              <DropdownMenuItem asChild>
+                <a href="#" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-2 h-3.5 w-3.5" />
                   Open Link
                 </a>
-                </DropdownMenuItem>
-              )}
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() => handleDelete(snippet.id)}
+                onClick={handleDelete}
               >
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
                 Delete
@@ -173,11 +166,10 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
       >
         <div className="line-clamp-4 whitespace-pre-wrap break-all">
           { snippet.content_type === "code" ? (
-            <SyntaxHighlighter
-              language={snippet.language || "text"}
+            <SyntaxHighlighter> 
+              language={snippet.language}
               style={vscDarkPlus}
-              showLineNumbers={true}> 
-              { snippet.code }
+              showLineNumbers={true}
             </SyntaxHighlighter> 
           ) : (
             snippet.code
@@ -214,7 +206,7 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-border pt-3">
         <span className="text-[10px] text-muted-foreground">
-          { actualDate }
+          { snippet.updated_at }
         </span>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -224,7 +216,7 @@ export default function SnippetCard({ snippet, onToggleFavorite, handleCopy, isC
                 "bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
               disabled={isCopied}
-              onClick={() => handleCopy(snippet.code)}
+              onClick={handleCopy}
             >
               <Copy className="h-3 w-3" />
               Copy

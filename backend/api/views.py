@@ -61,18 +61,18 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
             return queryset.filter(content_type=type)[:10]
 
         # we need to know why this in_trash filter isn't working
-        return queryset.filter(in_trash=False).order_by("-created_at")
+        return queryset.order_by("-created_at")
     
     # also we can only view the notes written by us so we create a custom function like above to handle POST request too
     def perform_create(self, serializer):
         if serializer.is_valid():
             ai_result = inference(serializer.validated_data['code'])
+            print(ai_result)
+            content_type = ai_result.get('content_type').strip('').lower()
             try:
                 language = ai_result.get('language').strip('').lower()
-                content_type = ai_result.get('content_type').strip('').lower()
             except Exception as e:
                 print(e)
-                content_type = None
                 language = None
             serializer.save(author=self.request.user, content_type=content_type, language=language) 
         else: 
@@ -83,12 +83,9 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
 class DeleteUpdateSnippetView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=SnippetModelSerializer
     permission_classes=[IsAuthenticated]
+
     # this is the custom method to handle the queryset 
     def get_queryset(self):
         user = self.request.user
         return Snippet.objects.filter(author=user)
-    
     # perform_destroy is the custom function in DestroyAPIView
-    def perform_destroy(self, instance):
-        instance.in_trash = True 
-        instance.save()
