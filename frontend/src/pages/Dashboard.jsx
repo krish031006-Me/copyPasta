@@ -24,25 +24,37 @@ function Dashboard(){
         setIsOpen(false)    
     })
 
-    // This is the function to toggle the favorite state of a snippet
+        const snippetIdMatches = (s, key) =>
+            s.id === key || String(s.id) === String(key)
+
     const toggleFavorite = async (key) => {
+        const snippet = snippets.find((s) => snippetIdMatches(s, key))
+        if (!snippet) {
+            console.error("Snippet not found")
+            return
+        }
+        const next = !Boolean(snippet.is_favorite)
+        setSnippets((prev) =>
+            prev.map((s) =>
+                snippetIdMatches(s, key) ? { ...s, is_favorite: next } : s
+            )
+        ) 
         try {
-            const snippet = snippets.find((s) => s.id === key)
-            if (!snippet) {
-                console.error("Snippet not found")
-                return
-            }
-            const res = await api.patch(`api/snippets/${key}/`, {
-                is_favorite: !snippet.is_favorite
-            })
-            if (res.status === 200) {
-                const updated = { ...snippet, is_favorite: !snippet.is_favorite }
-                setSnippets((prev) => prev.map((s) => (s.id === key ? updated : s)))
-            } else {
-                console.error("Failed to update favorite state")
+            const res = await api.patch(`api/snippets/delete/${key}/`, {
+                is_favorite: next,
+            }) 
+            if (res.status !== 200 && res.status !== 204) {
+                throw new Error("Failed to update favorite state")
             }
         } catch (err) {
             console.error(err)
+            setSnippets((prev) =>
+                prev.map((s) =>
+                    snippetIdMatches(s, key)
+                        ? { ...s, is_favorite: !next }
+                        : s
+                )
+            )
         }
     }
         
@@ -62,27 +74,16 @@ function Dashboard(){
 
     }
     
-    // This is the function to handle the deletion of a snippet
-    const handleDelete = async(key) => {
-        try{
-            const res = await api.delete(`api/snippets/${key}/`)
-            if(res.status === 204){
-                // update the trash state
-                const trashRes = await api.patch(`api/snippets/${key}`,{
-                    in_trash: true
-                })
-                if(trashRes.status === 200){
-                    // update the snippets
-                    const updated = snippets.filter((s) => s.id !== key)
-                    setSnippets(updated)
-                }else{
-                    console.error("Failed to update trash state")
-                }
-            }else{
-                console.log("Couldn't delete the snippet")
+    const handleDelete = async (key) => {
+        try {
+            const res = await api.delete(`api/snippets/delete/${key}/`)
+            if (res.status === 204) {
+                setSnippets((prev) => prev.filter((s) => s.id !== key))
+            } else {
+                console.error("Failed to move snippet to trash")
             }
-        }catch(err){ 
-            console.log(err)
+        } catch(err){ 
+            console.error(err)
         }
     }
 
@@ -106,11 +107,7 @@ function Dashboard(){
     // This is the function to get the snippets
     const GetSnippets = async (type) => {
         try {
-            const res = await api.get(`api/snippets/?type=${type || "all"}`,{
-                headers: {
-                    Authorization: `Bearer ${token}` // This tells the backend who you are!
-                  }
-            })
+            const res = await api.get(`api/snippets/?type=${type || "all"}`)
             const data = res.data?.results ?? res.data
             setSnippets(Array.isArray(data) ? data : [])
         } catch (err) {
@@ -133,7 +130,7 @@ function Dashboard(){
 
             {open && (
                 <div>
-                    <QuickAddSnippetModal open={open} onClose={onClose} setIsOpen={setIsOpen}></QuickAddSnippetModal> 
+                    <QuickAddSnippetModal open={open} onClose={onClose} setIsOpen={setIsOpen} setSnippets={setSnippets}></QuickAddSnippetModal> 
                 </div>
             )}
 
