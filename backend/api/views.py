@@ -56,9 +56,11 @@ class CreateSnippetView(generics.ListCreateAPIView): # handles both GET and POST
         elif type=="trash":
             return queryset.filter(in_trash=True)
         elif type=="recent":
-            return queryset.filter(in_trash=False).order_by("-updated_at")[:10]
-        elif type in ["codes", "links", "texts"]:
-            return queryset.filter(content_type=type)[:10]
+            return queryset.filter(in_trash=False).order_by("-updated_at")[:5]
+        elif type in ["code", "text"]:
+            return queryset.filter(content_type=type, in_trash=False)[:10] 
+        elif type == "links":
+            return queryset.filter(content_type="link", in_trash=False)[:10] 
 
         # we need to know why this in_trash filter isn't working
         return queryset.order_by("-created_at")
