@@ -39,13 +39,9 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
   // Updating the snippets
   const changeContent = async (link, name) => {
     try{
-      const token = localStorage.getItem(ACCESS_TOKEN)
-      const res = await api.get(link, {
-        headers: {
-          Authorization: `Bearer ${token}` // This tells the backend who you are!
-        }
-      });
-      const data = res.data?.results ?? res.data
+
+      const res = await api.get(link) 
+      const data = res.data?.results ?? res.data 
       setSnippets(Array.isArray(data) ? data : [])
       setShowing(name)
     }
@@ -109,7 +105,7 @@ export default function Sidebar({ count, refreshCount, setSnippets, setShowing, 
               className={cn(
                 "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
                 "bg-accent text-accent-foreground"
-              )}
+              )} 
               onClick={() => changeContent(link, category.name)} 
             >
               <Logo className="h-4 w-4 shrink-0 text-primary" />
